@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit, jit
+from numba import njit  # jit
 import mkl_fft
 import matplotlib.pyplot as plt
 
