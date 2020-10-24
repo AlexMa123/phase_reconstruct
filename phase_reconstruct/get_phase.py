@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from tools import get_protophase_hilbert, flatten_phase
+from .tools import get_protophase_hilbert, flatten_phase
 from scipy.interpolate import interp1d
 import time
 from numba import jit

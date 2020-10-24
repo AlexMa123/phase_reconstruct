@@ -1,7 +1,12 @@
 from typing import Tuple
 import numpy as np
 from numba import njit, jit
-import mkl_fft
+try:
+    from mkl_fft import fft, ifft
+    print("using mkl_fft")
+except ImportError:
+    from numpy.fft import fft, ifft
+    print("using numpy_fft")
 
 
 @jit
@@ -103,9 +108,9 @@ def hilbert(signal: np.ndarray) -> np.ndarray:
             x[(N + 1) // 2:] = 0
         return x
 
-    Xf = mkl_fft.fft(signal)
+    Xf = fft(signal)
     Xf = _modifyfft(Xf)
-    x = mkl_fft.ifft(Xf)
+    x = ifft(Xf)
     return x
 
 
