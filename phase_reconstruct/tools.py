@@ -244,4 +244,4 @@ def flatten_phase(phase_mod_2pi: np.ndarray,
         else:
             end = phase_shift_point[i] + 1
         phase_mod_2pi[start:end] = phase_mod_2pi[start:end] + np.pi * (2 * i)
-    return phase_mod_2pi
+    return phase_mod_2pi, phase_shift_point
