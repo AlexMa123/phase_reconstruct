@@ -5,3 +5,7 @@ Kralemann et al._2008_Phase dynamics of coupled oscillators reconstructed from d
 __pycache__
 Untitled.ipynb
 .ipynb_checkpoints/
+build
+dist
+phase_reconstruct/__pycache__
+phase_reconstruct.egg-info

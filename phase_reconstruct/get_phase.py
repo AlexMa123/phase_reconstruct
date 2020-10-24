@@ -1,19 +1,47 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from tools import get_protophase_hilbert, flatten_phase
-from numba import njit
-from scipy.integrate import solve_ivp
+from .tools import get_protophase_hilbert, flatten_phase
+from numba import jit
 
 
-@njit
+@jit
 def fourier_coefficient(protophase: np.ndarray, n: int) -> complex:
+    """
+    Calculate Sn, See Eq.15
+
+    Parameters
+    ----------
+        protophase : np.ndarray
+
+        n : int
+
+    Returns
+    -------
+        complex
+            Sn
+    """
     sn = np.exp(-1j * n * protophase)
     Np = sn.size
     return np.sum(sn / Np)
 
 
-@njit
-def get_phase(protophase: np.ndarray, N: int = 0) -> np.ndarray:
+@jit
+def proto_to_phase(protophase: np.ndarray, N: int = 0) -> np.ndarray:
+    """
+    transfor protophase to phase
+
+    Parameters
+    ----------
+        protophase : np.ndarray
+
+        N : int, optional
+            number of fourier terms need to be used
+
+    Returns
+    -------
+        np.ndarray
+            phase
+    """
     phase_mod_2p = protophase % (2 * np.pi) + np.zeros(protophase.size) * 1j
     phase = phase_mod_2p.copy()
     if N == 0:
@@ -25,8 +53,23 @@ def get_phase(protophase: np.ndarray, N: int = 0) -> np.ndarray:
     return phase
 
 
-@njit
+@jit
 def get_phase_relation(protophase: np.ndarray, N: int = 0) -> np.ndarray:
+    """
+    relation between protophase and phase
+
+    Parameters
+    ----------
+        protophase : np.ndarray
+
+        N : int, optional
+            number of fourier terms need to be used
+
+    Returns
+    -------
+        np.ndarray
+            phase (protophase from 0 to 2pi)
+    """
     phase = np.linspace(0, np.pi * 2, 1000) + np.zeros(1000) * 1j
     new_phase = phase.copy()
     if N == 0:
