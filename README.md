@@ -9,3 +9,6 @@ The detail of the method can be get from: [link](https://journals.aps.org/pre/ab
 ```shell
 pip install git+https://github.com/AlexMa123/phase_reconstruct
 ```
+
+## Example:
+[colab link](https://colab.research.google.com/drive/1zR_7afml7DmfRfZg6_AolVkq-0SOiz2b?usp=sharing)

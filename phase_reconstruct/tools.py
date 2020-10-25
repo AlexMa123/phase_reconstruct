@@ -1,6 +1,7 @@
 from typing import Tuple
 import numpy as np
 from numba import njit, jit
+import matplotlib.pyplot as plt
 try:
     from mkl_fft import fft, ifft
     print("using mkl_fft")
@@ -250,3 +251,14 @@ def flatten_phase(phase_mod_2pi: np.ndarray,
             end = phase_shift_point[i] + 1
         phase_mod_2pi[start:end] = phase_mod_2pi[start:end] + np.pi * (2 * i)
     return phase_mod_2pi, phase_shift_point
+
+
+if __name__ == "__main__":
+    t = np.linspace(0, 12 * np.pi, 10000)
+    signal = np.cos(t)
+    phase1 = get_protophase_hilbert(signal)
+    phase2 = get_protophase_hilbert(signal, 0, 0.2)
+    plt.figure()
+    plt.plot(phase1)
+    plt.plot(phase2)
+    plt.show()
