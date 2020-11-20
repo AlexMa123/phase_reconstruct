@@ -57,7 +57,8 @@ def proto_to_phase(protophase: np.ndarray, N: int = 0) -> np.ndarray:
 
 def proto_to_phase_fast(protophase: np.ndarray,
                         nbins=1000,
-                        is_interpolate=False) -> np.ndarray:
+                        is_interpolate=False,
+                        method="fft") -> np.ndarray:
     """
     from protophase to phase by using cumulative distribution function directly.
 
@@ -76,28 +77,36 @@ def proto_to_phase_fast(protophase: np.ndarray,
         np.ndarray
             phase
     """
-    phase_mod_2p = protophase % (2 * np.pi)
-    p_proto, bin_edges = np.histogram(phase_mod_2p,
-                                      bins=nbins,
-                                      range=(0, 2 * np.pi),
-                                      density=True)
-    bin_center = bin_edges[1:] + bin_edges[:-1]
-    bin_center = bin_center / 2.
-    proto_to_phase = np.cumsum(p_proto) * 2 * np.pi * (bin_edges[1] -
-                                                       bin_edges[0])
-    if is_interpolate:
-        x = np.zeros(bin_center.size + 2)
-        y = np.zeros(bin_center.size + 2)
-        x[1:-1] = bin_center
-        x[-1] = np.pi * 2
-        y[1:-1] = proto_to_phase
-        y[-1] = np.pi * 2
-        f = interp1d(x, y)
-        new_phase = f(phase_mod_2p)
-    else:
-        idx = np.floor(phase_mod_2p / (2 * np.pi / nbins)).astype(int)
-        new_phase = proto_to_phase[idx]
-    return new_phase
+    if method == "fft":
+        phase_mod_2p = protophase % (2 * np.pi)
+        proto_phase = np.linspace(0, np.pi * 2, 5000) + np.zeros(5000) * 1j
+        phase = get_phase_relation(phase_mod_2p, nbins).real
+        f = interp1d(proto_phase, phase)
+        return f(phase_mod_2p)
+
+    if method == "cdf":
+        phase_mod_2p = protophase % (2 * np.pi)
+        p_proto, bin_edges = np.histogram(phase_mod_2p,
+                                          bins=nbins,
+                                          range=(0, 2 * np.pi),
+                                          density=True)
+        bin_center = bin_edges[1:] + bin_edges[:-1]
+        bin_center = bin_center / 2.
+        proto_to_phase = np.cumsum(p_proto) * 2 * np.pi * (bin_edges[1] -
+                                                           bin_edges[0])
+        if is_interpolate:
+            x = np.zeros(bin_center.size + 2)
+            y = np.zeros(bin_center.size + 2)
+            x[1:-1] = bin_center
+            x[-1] = np.pi * 2
+            y[1:-1] = proto_to_phase
+            y[-1] = np.pi * 2
+            f = interp1d(x, y)
+            new_phase = f(phase_mod_2p)
+        else:
+            idx = np.floor(phase_mod_2p / (2 * np.pi / nbins)).astype(int)
+            new_phase = proto_to_phase[idx]
+        return new_phase
 
 
 @jit
@@ -117,7 +126,7 @@ def get_phase_relation(protophase: np.ndarray, N: int = 0) -> np.ndarray:
         np.ndarray
             phase (protophase from 0 to 2pi)
     """
-    phase = np.linspace(0, np.pi * 2, 1000) + np.zeros(1000) * 1j
+    phase = np.linspace(0, np.pi * 2, 5000) + np.zeros(5000) * 1j
     new_phase = phase.copy()
     if N == 0:
         N = protophase.size

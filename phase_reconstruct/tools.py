@@ -4,10 +4,8 @@ from numba import njit, jit
 import matplotlib.pyplot as plt
 try:
     from mkl_fft import fft, ifft
-    print("using mkl_fft")
 except ImportError:
     from numpy.fft import fft, ifft
-    print("using numpy_fft")
 
 
 @jit
