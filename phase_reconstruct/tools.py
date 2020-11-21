@@ -84,7 +84,7 @@ def hilbert(signal: np.ndarray) -> np.ndarray:
         np.ndarray
            :math:'s + s_{H} i'
     """
-    @njit("c16[:](c16[:])")
+    @njit
     def _modifyfft(x: np.ndarray) -> np.ndarray:
         """used by the function hilbert
 
